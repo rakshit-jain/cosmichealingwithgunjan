@@ -55,11 +55,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission handling
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
+        // Load the EmailJS SDK
+        const emailjsScript = document.createElement('script');
+        emailjsScript.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
+        document.head.appendChild(emailjsScript);
+
+        emailjsScript.onload = function() {
+            // Initialize EmailJS with your user ID
+            emailjs.init("vMYnJAu6sKepgSRww"); // Replace with your actual EmailJS public key
+        };
+
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // In a real implementation, you would send the form data to a server or email service
-            // For now, we'll just show a success message
+            // Collect form data
             const formData = new FormData(contactForm);
             let formValues = {};
 
@@ -67,13 +76,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 formValues[key] = value;
             }
 
+            // Add current date for the template
+            formValues.date = new Date().toLocaleDateString();
+
             console.log('Form submitted with values:', formValues);
 
-            // Display success message
-            contactForm.innerHTML = '<div class="success-message"><h3>Thank You!</h3><p>Your message has been sent successfully. I will get back to you soon.</p></div>';
+            // Show loading state
+            const submitButton = contactForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.innerText;
+            submitButton.innerText = 'Sending...';
+            submitButton.disabled = true;
+
+            // Send email using EmailJS
+            emailjs.send(
+                'gmail', // Use the Gmail service - must be set up in EmailJS dashboard
+                'akashic_healing_template', // Replace with your template ID from EmailJS
+                formValues
+            ).then(function(response) {
+                console.log('Email sent successfully:', response);
+                // Display success message
+                contactForm.innerHTML = '<div class="success-message"><h3>Thank You!</h3>' +
+                    '<p>Your message has been sent successfully. I will get back to you soon.</p></div>';
+            }).catch(function(error) {
+                console.error('Email sending failed:', error);
+                submitButton.innerText = originalButtonText;
+                submitButton.disabled = false;
+
+                // Show error message
+                const errorMessage = document.createElement('p');
+                errorMessage.textContent = 'Failed to send message. Please try again later.';
+                errorMessage.style.color = 'red';
+                contactForm.appendChild(errorMessage);
+            });
         });
     }
-
+    
     // Newsletter form submission
     const newsletterForm = document.querySelector('.newsletter-form');
     if (newsletterForm) {
