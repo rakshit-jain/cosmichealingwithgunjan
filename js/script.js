@@ -61,8 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(emailjsScript);
 
         emailjsScript.onload = function() {
-            // Initialize EmailJS with your user ID
-            emailjs.init("vMYnJAu6sKepgSRww"); // Replace with your actual EmailJS public key
+            emailjs.init("vMYnJAu6sKepgSRww");
         };
 
         contactForm.addEventListener('submit', function(e) {
