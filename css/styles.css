@@ -173,7 +173,7 @@ nav {
 }
 
 .logo img.profile-image {
-    max-height: 200px; /* Increased to 200px as requested */
+    max-height: 200px; /* Restored to 200px for desktop view */
     width: auto;
     display: block;
     border-radius: 50%;
@@ -583,7 +583,7 @@ footer {
 
     /* Keep logo size consistent with desktop */
     .logo img.profile-image {
-        max-height: 200px;
+        max-height: 130px;
     }
 
     .logo {
@@ -639,7 +639,7 @@ footer {
 
     /* Keep logo size consistent with desktop */
     .logo img.profile-image {
-        max-height: 200px;
+        max-height: 130px;
     }
 
     .logo {
