@@ -136,6 +136,11 @@ header {
     align-items: center;
 }
 
+/* Shorter header for inner pages */
+.inner-page-header {
+    min-height: 30vh !important;
+}
+
 header:before {
     content: '';
     position: absolute;
@@ -167,12 +172,35 @@ nav {
     font-weight: 600;
 }
 
+.logo img.profile-image {
+    max-height: 200px; /* Increased to 200px as requested */
+    width: auto;
+    display: block;
+    border-radius: 50%;
+    background: #fff;
+    padding: 8px; /* Slightly increased padding for better proportion with larger size */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: all 0.3s ease;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    height: 210px; /* Increased to accommodate larger logo */
+    padding-left: 8px; /* Matching the padding on the image */
+}
+
 .nav-links {
     display: flex;
 }
 
 .nav-links li {
     margin-left: 2.5rem;
+}
+
+/* Add padding to the right of the Contact navigation item */
+.nav-links li:last-child {
+    padding-right: 20px;
 }
 
 .nav-links a {
@@ -552,6 +580,14 @@ footer {
     .reverse {
         flex-direction: column;
     }
+
+    .logo img.profile-image {
+        max-height: 70px; /* Slightly smaller on tablets */
+    }
+
+    .logo {
+        height: 80px;
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -598,5 +634,13 @@ footer {
 
     .footer-content {
         flex-direction: column;
+    }
+
+    .logo img.profile-image {
+        max-height: 60px; /* Even smaller on mobile */
+    }
+
+    .logo {
+        height: 70px;
     }
 }
