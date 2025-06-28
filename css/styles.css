@@ -581,12 +581,13 @@ footer {
         flex-direction: column;
     }
 
+    /* Keep logo size consistent with desktop */
     .logo img.profile-image {
-        max-height: 70px; /* Slightly smaller on tablets */
+        max-height: 200px;
     }
 
     .logo {
-        height: 80px;
+        height: 210px;
     }
 }
 
