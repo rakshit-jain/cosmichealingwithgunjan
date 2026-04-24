@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Mobile menu toggle
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
 
     if (hamburger) {
-        hamburger.addEventListener('click', function() {
+        hamburger.addEventListener('click', function () {
             navLinks.classList.toggle('active');
             hamburger.classList.toggle('active');
         });
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close mobile menu when clicking on a nav link
     const navItems = document.querySelectorAll('.nav-links a');
     navItems.forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             if (navLinks.classList.contains('active')) {
                 navLinks.classList.remove('active');
                 hamburger.classList.remove('active');
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Next button functionality
         if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
+            nextBtn.addEventListener('click', function () {
                 testimonials[currentTestimonial].style.display = 'none';
                 currentTestimonial = (currentTestimonial + 1) % testimonials.length;
                 testimonials[currentTestimonial].style.display = 'block';
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Previous button functionality
         if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
+            prevBtn.addEventListener('click', function () {
                 testimonials[currentTestimonial].style.display = 'none';
                 currentTestimonial = (currentTestimonial - 1 + testimonials.length) % testimonials.length;
                 testimonials[currentTestimonial].style.display = 'block';
@@ -60,11 +60,11 @@ document.addEventListener('DOMContentLoaded', function() {
         emailjsScript.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
         document.head.appendChild(emailjsScript);
 
-        emailjsScript.onload = function() {
+        emailjsScript.onload = function () {
             emailjs.init("vMYnJAu6sKepgSRww");
         };
 
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             // Collect form data
@@ -91,12 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 'gmail', // Use the Gmail service - must be set up in EmailJS dashboard
                 'akashic_healing_template', // Replace with your template ID from EmailJS
                 formValues
-            ).then(function(response) {
+            ).then(function (response) {
                 console.log('Email sent successfully:', response);
                 // Display success message
                 contactForm.innerHTML = '<div class="success-message"><h3>Thank You!</h3>' +
                     '<p>Your message has been sent successfully. I will get back to you soon.</p></div>';
-            }).catch(function(error) {
+            }).catch(function (error) {
                 console.error('Email sending failed:', error);
                 submitButton.innerText = originalButtonText;
                 submitButton.disabled = false;
@@ -109,11 +109,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
     // Newsletter form submission
     const newsletterForm = document.querySelector('.newsletter-form');
     if (newsletterForm) {
-        newsletterForm.addEventListener('submit', function(e) {
+        newsletterForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const emailInput = newsletterForm.querySelector('input[type="email"]');
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
 
             const target = document.querySelector(this.getAttribute('href'));
@@ -161,5 +161,89 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Dynamic Razorpay link switching based on country
+    const paymentLinks = {
+        'akashic-regular': {
+            'INR': 'https://rzp.io/l/AkashicRecordsReading',
+            'AUD': 'https://rzp.io/rzp/AUDAkashicRecordsReading',
+            'USD': 'https://rzp.io/rzp/IntlAkashicRecordsReading'
+        },
+        'akashic-priority': {
+            'INR': 'https://rzp.io/rzp/PriorityReading',
+            'AUD': 'https://rzp.io/rzp/AUDPriorityReading',
+            'USD': 'https://rzp.io/rzp/IntlPriorityReading'
+        },
+        'tarot-30': {
+            'INR': 'https://rzp.io/rzp/30minutesTarotReading',
+            'AUD': 'https://rzp.io/rzp/AUD30minsTarotReading',
+            'USD': 'https://rzp.io/rzp/Intl30minsTarotReading'
+        },
+        'tarot-60': {
+            'INR': 'https://rzp.io/rzp/60minutesTarotReading',
+            'AUD': 'https://rzp.io/rzp/AUD60minsTarotReading',
+            'USD': 'https://rzp.io/rzp/Intl60minsTarotReading'
+        },
+        'ashati': {
+            'INR': 'https://rzp.io/rzp/AshatiHealing',
+            'AUD': 'https://rzp.io/rzp/AUDAshatiHealing',
+            'USD': 'https://rzp.io/rzp/IntlAshatiHealing'
+        }
+    };
+
+    function updatePaymentLinks() {
+        // Initial detection using Browser heuristics (Timezone/Language)
+        let detectedCurrency = 'USD'; // Default as requested
+
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const language = navigator.language || '';
+
+        if (timezone.includes('Kolkata') || language.includes('IN')) {
+            detectedCurrency = 'INR';
+        } else if (timezone.includes('Australia') || timezone.includes('Sydney') || timezone.includes('Melbourne') || timezone.includes('Perth') || timezone.includes('Brisbane')) {
+            detectedCurrency = 'AUD';
+        }
+
+        // Apply heuristic detection first
+        applyLinks(detectedCurrency);
+        console.log('Heuristic detection:', detectedCurrency, '(TZ:', timezone, 'Lang:', language, ')');
+
+        // Then try to refine with IP API
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                const countryCode = data.country_code;
+                let finalCurrency = 'USD';
+
+                if (countryCode === 'IN') {
+                    finalCurrency = 'INR';
+                } else if (countryCode === 'AU') {
+                    finalCurrency = 'AUD';
+                } else {
+                    finalCurrency = 'USD';
+                }
+
+                if (finalCurrency !== detectedCurrency) {
+                    console.log('API detection override:', finalCurrency);
+                    applyLinks(finalCurrency);
+                }
+            })
+            .catch(error => {
+                console.warn('IP API detection failed, sticking with heuristic:', detectedCurrency);
+            });
+    }
+
+    function applyLinks(currency) {
+        const bookingLinks = document.querySelectorAll('[data-service]');
+        bookingLinks.forEach(link => {
+            const service = link.getAttribute('data-service');
+            if (paymentLinks[service] && paymentLinks[service][currency]) {
+                link.href = paymentLinks[service][currency];
+            }
+        });
+    }
+
+    // Initialize link switching
+    updatePaymentLinks();
 });
 
